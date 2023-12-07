@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "ssrs"
+version = "0.1.0"
+description = ""
+authors = ["Mikhail Puzanov <mpuzanov@mail.ru>"]
+readme = "README.md"
+
+[tool.poetry.scripts]
+run-main = "ssrs.main:main"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pydantic-settings = "^2.1.0"
+openpyxl = "^3.1.2"
+pydantic = "^2.5.2"
+urllib3 = "^2.1.0"
+
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^6.1.0"
+pytest = "^7.4.3"
+setuptools = "^69.0.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
