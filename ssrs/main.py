@@ -14,6 +14,9 @@ def main():
 
     file_param = sys.argv[1]
     params = read_xlsx_file(file_param)
+    if len(params) == 0:
+        sys.exit("параметров для выполнения отчётов нет")
+
     get_ssrs_file(params)
     for item in params:
         if item.to_email and item.file_name:
