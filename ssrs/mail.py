@@ -21,7 +21,7 @@ def get_body_text(file):
 def send_email(to_addr, body_text, subject, attach_files: str = "") -> bool:
     """
     Функция отправки Email
-    :param to_addr: кому
+    :param to_addr: кому - список адресов через ";"
     :param body_text: текст сообщения
     :param subject: тема письма
     :param attach_files: список вложенных файлов через ';'
@@ -31,9 +31,10 @@ def send_email(to_addr, body_text, subject, attach_files: str = "") -> bool:
     smtp_server = settings.mail_server
     sender_email = settings.mail_username
     password = settings.mail_password
+    to_emails = [x.strip() for x in to_addr.split(';') if x != '']
 
     msg = MIMEMultipart()
-    msg['To'] = to_addr
+    msg['To'] = ', '.join(to_emails)
     msg['From'] = sender_email
     msg['Subject'] = subject
     msg.attach(MIMEText(body_text, "html" if 'html' in body_text else "plain"))
@@ -63,10 +64,10 @@ def send_email(to_addr, body_text, subject, attach_files: str = "") -> bool:
         with smtplib.SMTP_SSL(smtp_server, port, context=context, timeout=settings.mail_timeout) as server:
             server.login(sender_email, password)
             sendmail_status = server.sendmail(
-                sender_email, to_addr, msg.as_string()
+                sender_email, to_emails, msg.as_string()
             )
             if sendmail_status != {}:
-                logger.error(f'error send email to {to_addr}: {sendmail_status=}')
+                logger.error(f'error send email to {to_emails}: {sendmail_status=}')
             return True
     except Exception as error:
         logger.error(f'\n{error=}')
