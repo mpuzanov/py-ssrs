@@ -1,3 +1,4 @@
+import queue
 from datetime import datetime
 import urllib3
 import os.path
@@ -6,7 +7,7 @@ from ssrs.models import ParamReport
 from ssrs.config import settings, logger
 
 
-def get_ssrs_file(params: list[ParamReport]):
+def get_ssrs_file(params: list[ParamReport], queue_result: queue.Queue):
     """Делаем запрос к сайту SSRS для получения файла с отчётом"""
     global response  # noqa
     headers = urllib3.make_headers(basic_auth=f'{settings.SSRS_USER}:{settings.SSRS_PASS}')
@@ -28,7 +29,8 @@ def get_ssrs_file(params: list[ParamReport]):
                                     )
             if response.status != 200:
                 raise Exception(f"{response.status=}")
-            logger.debug(f"{response.headers=}")
+            resp_headers = response.headers
+            logger.debug(f"{resp_headers.get('Content-Disposition')=}")
         except urllib3.exceptions.MaxRetryError as e:
             logger.exception(e.args[0])
             return
@@ -58,6 +60,8 @@ def get_ssrs_file(params: list[ParamReport]):
                 item.file_name = None
             else:
                 logger.info(f"отчёт получен и сохранён: {local_filename}")
+                queue_result.put(item)
+                logger.info(f'добавлен в очередь {item}')
 
 
 def create_get_params(item: ParamReport) -> str:
