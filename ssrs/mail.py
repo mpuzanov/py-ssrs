@@ -15,7 +15,7 @@ from ssrs.config import settings, logger
 
 def get_body_text(file):
     """ Возвращает текст для тела письма email сообщения """
-    return f"""<html><body><p>Добрый день.<br>К письму прикреплен отчет: {file}</p></body></html>"""
+    return f"""<html><body><p>Добрый день.<br>К письму прикреплен файл: {file}</p></body></html>"""
 
 
 def send_email(to_addr, body_text, subject, attach_files: str = "") -> bool:
